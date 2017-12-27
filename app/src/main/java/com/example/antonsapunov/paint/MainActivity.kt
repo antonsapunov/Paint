@@ -15,6 +15,8 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.FileProvider
 import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -56,11 +58,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun chooseImageFromGallery() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(Intent.createChooser(intent, "Select image:"), GALLERY)
-        } else Toast.makeText(this, "Can`t choose picture :(", Toast.LENGTH_LONG).show()
+        startActivityForResult(intent, GALLERY)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultIntent: Intent?) {
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 CAMERA -> {
-                    startActivity(PaintActivity.newIntent(this, cameraImageUri))
+                    startActivity(PaintActivity.newIntent(this, cameraImageUri, "camera"))
                 }
                 GALLERY -> {
                     if (resultIntent != null) {

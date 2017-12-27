@@ -26,7 +26,7 @@
         app:menu_colorPressed="#E75043"
         app:menu_colorRipple="#99FFFFFF"
         app:menu_fab_size="normal"
-        app:menu_icon="@drawable/fab_add"
+        app:menu_icon="@drawable/marker"
         app:menu_labels_colorNormal="#333333"
         app:menu_labels_colorPressed="#444444"
         app:menu_labels_colorRipple="#66FFFFFF"
@@ -52,13 +52,6 @@
         app:menu_shadowXOffset="1dp"
         app:menu_shadowYOffset="3dp"
         app:menu_showShadow="true">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/modeMove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/cursor_pointer"
-            app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/modePath"

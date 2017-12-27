@@ -9,7 +9,7 @@ import android.view.*
 import java.util.*
 
 enum class Tool {
-    PATH, RECT, CIRCLE, MOVE
+    PATH, RECT, CIRCLE
 }
 
 data class Shape(val color: Int, val width: Float, val path: Path)
@@ -25,19 +25,14 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
     private val TOUCH_TOLERANCE_MIN = 1f
     private val TOUCH_TOLERANCE_MAX = 100f
 
-    private val MAX_SCALE = 5f
-    private val MIN_SCALE = 1f
-
     private var bitmap: Bitmap? = null
     private var canvas: Canvas? = null
     private val path = Path()
     private val paint = Paint()
-    private val bitmapPaint: Paint
+    private val bitmapPaint: Paint = Paint(Paint.DITHER_FLAG)
     private var background: Bitmap? = null
 
-    private val scaleGestureDetector: ScaleGestureDetector
-
-    var color = Color.BLACK
+    var color = Color.RED
     var strokeWidth = 5f
 
     private var scaleFactor = 1f
@@ -52,9 +47,6 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
     private var shapes = LinkedList<Shape>()
 
     init {
-        scaleGestureDetector = ScaleGestureDetector(this.context, ScaleListener())
-
-        bitmapPaint = Paint(Paint.DITHER_FLAG)
 
         paint.isAntiAlias = true
         paint.isDither = true
@@ -133,25 +125,6 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
                 path.reset()
                 path.addOval(left, top, right, bottom, Path.Direction.CCW)
             }
-            Tool.MOVE -> {
-                val dx = currentX - toGlobalCoords(x, Axis.X)
-                val dy = currentY - toGlobalCoords(y, Axis.Y)
-                originX -= dx * scaleFactor
-                originY -= dy * scaleFactor
-
-                if (originX < width - width * scaleFactor) {
-                    originX = width - width * scaleFactor
-                }
-                if (originY < height - height * scaleFactor) {
-                    originY = height - height * scaleFactor
-                }
-                if (originX > 0) {
-                    originX = 0f
-                }
-                if (originY > 0) {
-                    originY = 0f
-                }
-            }
         }
         currentX = toGlobalCoords(x, Axis.X)
         currentY = toGlobalCoords(y, Axis.Y)
@@ -162,9 +135,7 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.pointerCount > 1 && tool == Tool.MOVE) {
-            scaleGestureDetector.onTouchEvent(event)
-        } else {
+        if (event.pointerCount == 1) {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     touchStart(event.x, event.y)
@@ -184,9 +155,11 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
         return true
     }
 
-    private fun toGlobalCoords(coord: Float, axis: Axis): Float = when (axis) {
-        Axis.X -> coord / (scaleFactor) - (originX / scaleFactor)
-        Axis.Y -> coord / (scaleFactor) - (originY / scaleFactor)
+    private fun toGlobalCoords(coord: Float, axis: Axis): Float {
+        return when (axis) {
+            Axis.X -> coord / (scaleFactor) - (originX / scaleFactor)
+            Axis.Y -> coord / (scaleFactor) - (originY / scaleFactor)
+        }
     }
 
     private fun aspectFitRect(bitmap: Bitmap): RectF {
@@ -215,18 +188,6 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
         return rect
     }
 
-    inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-
-        override fun onScale(detector: ScaleGestureDetector?): Boolean {
-            detector?.let {
-                val scale = scaleFactor * it.scaleFactor
-                scaleFactor = maxOf(MIN_SCALE, minOf(scale, MAX_SCALE))
-            }
-            invalidate()
-            return true
-        }
-    }
-
     fun drawImage(bitmap: Bitmap) {
         shapes.clear()
         this.background = bitmap
@@ -242,7 +203,7 @@ class DrawingView(context: Context, attributeSet: AttributeSet) : View(context, 
     }
 
     fun getImage(): Bitmap? {
-        val image: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        var image: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         image.eraseColor(Color.WHITE)
         val canvas = Canvas(image)
         background?.let {
