@@ -15,8 +15,6 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.FileProvider
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {

@@ -2,12 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/actionSave"
-        android:icon="@drawable/ic_save"
-        android:orderInCategory="200"
-        android:title="Save"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/actionPickColor"
         android:icon="@drawable/ic_color"
         android:orderInCategory="0"
@@ -18,6 +12,12 @@
         android:icon="@drawable/marker"
         android:orderInCategory="0"
         android:title="Width"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/actionSave"
+        android:icon="@drawable/ic_save"
+        android:orderInCategory="100"
+        android:title="Save"
         app:showAsAction="always" />
     <item
         android:id="@+id/actionShare"
